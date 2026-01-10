@@ -1,5 +1,19 @@
-# nesterov-accelerated-gradient
-Term paper conducted on the topic of the Nesterov Accelerated Gradient (NAG) minimization method by A. Mustafić &amp; Z. Ljutika, "Numerical Algorithms" course, Faculty of Electrical Engineering, University of Sarajevo
+# Nesterov Accelerated Gradient Minimization Method (NAG)
+
+_(bs. Nesterovljev ubrzani gradijentni metod za minimizaciju)_
+
+**Term paper conducted on the topic of the Nesterov Accelerated Gradient (NAG) minimization method.**
+
+**Authors:** A. Mustafić (@astaffz) & Z. Ljutika (@Ljut)  
+**Course:** Numerical Algorithms, Computer Science BSc., Prof. dr. Željko Jurić  
+**Institution:** Faculty of Electrical Engineering, University of Sarajevo  
+**Language:** Bosnian
+
+**Practical Examples:** All examples are provided in the `src/` directory and are implemented in Julia
+
+## Abstract
+
+TO-DO: Add the final paper abstract
 
 ## License
 
