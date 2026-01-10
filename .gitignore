@@ -81,7 +81,7 @@ vc_*.control.bib
 vc_*.styles.bib
 
 # build directory (uncomment to use)
-# build/
+paper/build/
 
 # Local configuration files:
 .latexmkrc
