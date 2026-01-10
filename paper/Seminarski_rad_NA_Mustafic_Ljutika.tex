@@ -129,30 +129,30 @@
 
 %%%%%%%%%%%%%%%%%%%% NASLOVNA STRANA %%%%%%%%%%%%%%%%%%%%%%%%
 \begin{titlepage}
-\begin{center}
+  \begin{center}
 
-\includegraphics[width=0.25\textwidth]{etf-logo.png}~\\[0.1cm]
-\textsc{\Large Univerzitet u Sarajevu}\\[0.2cm]  
-\textsc{\Large Elektrotehnički fakultet}\\[0.2cm] 
-\textsc{\Large Odsjek za računarstvo i informatiku}\\[3cm]\HRule \\[0.5cm] 
-{\huge \bfseries Nesterovljev ubrzani gradijentni metod za minimizaciju} \\[0.4cm] 
-\HRule \\[0.5cm]
+    \includegraphics[width=0.25\textwidth]{etf-logo.png}~\\[0.1cm]
+    \textsc{\Large Univerzitet u Sarajevu}\\[0.2cm]
+    \textsc{\Large Elektrotehnički fakultet}\\[0.2cm]
+    \textsc{\Large Odsjek za računarstvo i informatiku}\\[3cm]\HRule \\[0.5cm]
+    {\huge \bfseries Nesterovljev ubrzani gradijentni metod za minimizaciju} \\[0.4cm]
+    \HRule \\[0.5cm]
 
-\textsc{\Large Seminarski rad iz Numeričkih algoritama}\\[0.8cm]
+    \textsc{\Large Seminarski rad iz Numeričkih algoritama}\\[0.8cm]
 
-% Author and supervisor 
-\textbf{ 
-\Large Studenti:\\  
-\Large Aid Mustafić\\
-\Large Zlatan Ljutika\\[1cm]  
-\Large Profesor: \\[0.2cm] 
-\Large Red. prof. dr Željko Jurić.} 
-\vfill
+    % Author and supervisor 
+    \textbf{
+      \Large Studenti:\\
+      \Large Aid Mustafić\\
+      \Large Zlatan Ljutika\\[1cm]
+      \Large Profesor: \\[0.2cm]
+      \Large Red. prof. dr Željko Jurić.}
+    \vfill
 
-% Bottom of the page  
-{\large Sarajevo, januar 2025}
+    % Bottom of the page  
+    {\large Sarajevo, januar 2026.}
 
-\end{center} 
+  \end{center}
 \end{titlepage}
 
 % Sažetak (na Bosanskom jeziku) i Abstract (na Engleskom jeziku),
@@ -195,18 +195,20 @@
 
 %Poglavlja je najbolje raditi u odvojenim fajlovima
 %Poglavlje 1
-\include{poglavlje_1}
+\include{p1_uvod}
 %Poglavlje 2
-\include{poglavlje_2}
+\include{p2_implementacija_algoritma}
 %Poglavlje 3
-\include{poglavlje_3}
+\include{p3_primjene_algoritma}
+%Poglavlje 4
+\include{p4_zakljucak}
 
 
 %%%%%%%%%%%%%%%%%%%%% PRILOZI %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{appendices}
-%Priloge je najbolje raditi u odvojenim fajlovima
-%Prilog 1
-\include{prilog_1}
+  %Priloge je najbolje raditi u odvojenim fajlovima
+  %Prilog 1
+  \include{prilog_1}
 \end{appendices}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -214,12 +216,12 @@
 
 %%%%%%%%%%%%%%%%%%%%%%% LITERATURA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \addcontentsline{toc}{chapter}{Literatura}
-\bibliographystyle{IEEEtranETF} 
+\bibliographystyle{IEEEtranETF}
 \bibliography{literatura}
 
 %%%%%%%%%%%%%%%%%%% INDEKS POJMOVA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \addcontentsline{toc}{chapter}{Indeks pojmova}
-\printindex 
+\printindex
 
 
 \end{document}
