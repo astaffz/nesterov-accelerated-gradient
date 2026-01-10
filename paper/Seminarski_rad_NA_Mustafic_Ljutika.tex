@@ -15,15 +15,15 @@
 %Vecina paketa je ukljucena po defaultu u texlive 2013 i novijim verzijama
 \usepackage{silence}
 \ErrorFilter{tocbasic}{Unknown message}
-\usepackage{etex}
+\usepackage{etex}%
 \usepackage{xcolor}
 \usepackage{graphicx}
 \usepackage{rotating}
 \usepackage{epsfig}
 \usepackage{epstopdf}
 \usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage{cmap}
+\usepackage[utf8]{inputenc}%
+\usepackage{cmap}%
 \usepackage[croatian]{babel}
 \usepackage[unicode]{hyperref}
 \usepackage{mathptmx}
@@ -55,6 +55,8 @@
 \usepackage{courier}
 % Podesavanje izgleda zaglavlja i podnozja strana
 \usepackage{fancyhdr} 
+% Č, Ć, Đ, Ž, Š
+\usepackage{newtxtext,newtxmath}
 
 \fancypagestyle{plain}{%
   \fancyhf{}% Clear header/footer
@@ -131,7 +133,7 @@
 \begin{titlepage}
   \begin{center}
 
-    \includegraphics[width=0.25\textwidth]{etf-logo.png}~\\[0.1cm]
+    \includegraphics[width=0.25\textwidth]{Slike/etf-logo.png}~\\[0.1cm]
     \textsc{\Large Univerzitet u Sarajevu}\\[0.2cm]
     \textsc{\Large Elektrotehnički fakultet}\\[0.2cm]
     \textsc{\Large Odsjek za računarstvo i informatiku}\\[3cm]\HRule \\[0.5cm]
@@ -159,8 +161,8 @@
 % postavka rada i izjava o autentičnoati su dati kao odvojeni fajlovi
 
 %%%%%%%%%%%%%% SAŽETAK I ABSTRACT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\include{abstract}
-
+%\include{abstract/abstract}
+\input{CHAPTERS/abstract}
 %%%%%%%%%%%%%%%%%%%%% SADRŽAJ %%%%%%%%%%%%%%%%%%%%%%%%%
 %\clearpage
 \tableofcontents
@@ -195,20 +197,20 @@
 
 %Poglavlja je najbolje raditi u odvojenim fajlovima
 %Poglavlje 1
-\include{p1_uvod}
+\input{CHAPTERS/p1_uvod}
 %Poglavlje 2
-\include{p2_implementacija_algoritma}
+\input{CHAPTERS/p2_implementacija_algoritma}
 %Poglavlje 3
-\include{p3_primjene_algoritma}
+\input{CHAPTERS/p3_primjene_algoritma}
 %Poglavlje 4
-\include{p4_zakljucak}
+\input{CHAPTERS/p4_zakljucak}
 
 
 %%%%%%%%%%%%%%%%%%%%% PRILOZI %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{appendices}
   %Priloge je najbolje raditi u odvojenim fajlovima
   %Prilog 1
-  \include{prilog_1}
+  \input{CHAPTERS/prilog_1}
 \end{appendices}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -216,8 +218,8 @@
 
 %%%%%%%%%%%%%%%%%%%%%%% LITERATURA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \addcontentsline{toc}{chapter}{Literatura}
-\bibliographystyle{IEEEtranETF}
-\bibliography{literatura}
+\bibliographystyle{BIB/IEEEtranETF}
+\bibliography{BIB/literatura}
 
 %%%%%%%%%%%%%%%%%%% INDEKS POJMOVA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \addcontentsline{toc}{chapter}{Indeks pojmova}
