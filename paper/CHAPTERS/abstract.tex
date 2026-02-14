@@ -3,12 +3,38 @@
 \section*{Sažetak}
 
 
-Ovo je \LaTeX\ predložak za izradu završnog rada prvog ciklusa studija, izrađen za potrebe studenata Elektrotehničkog fakulteta u Sarajevu. U radu se isprepliću dvije odvojene cjeline - sadržaj i forma. Sadržaj rada je baziran na idejama iz važećeg Pravilnika o strukturi i sadržaju doktorske disertacije i magistarskog rada na Elektrotehničkom fakultetu u Sarajevu (br. 04-1-673/11, dana 17.01.2011. godine), dok je forma rada definirana strukturom i načinom korištenja .tex fajlova.
-U fajlu Zavrsni\_rad\_BSc\_Ime\_Prezime.tex oblikovane su osnovne stranice, a naredbom \textit{include} umeću se dodatne stranice i dodaju poglavlja. 
+\begin{lstlisting}[language=Julia]
+using Pkg;
+Pkg.add("DifferentialEquations")
+using DifferentialEquations
+function opruga(du,u,p,t)
+    du[1] = u[2];
+    du[2] = -p[1]*u[1]/p[2]
+end
 
-Osim \textit{Zavrsni\_rad\_BSc\_Ime\_Prezime.tex} fajla, koristi se još i: \textit{abstract.tex} (izdvojen fajl za sažetak na bosanskom i engleskom jeziku), \textit{postavka.tex} (izdvojen fajl za postavku rada), \textit{izjava.tex} (izdvojen fajl za izjavu o autentičnosti rada), \textit{poglavlje\_1.tex} (primjer jednog poglavlja),\textit{ prilog\_1.tex} (primjer jednog priloga) i \textit{literatura.bib} (bibliografski podaci).
+p = [100.0;10.0]
+u0 = [0.0;1.0]
+tspan = (0.0,10.0)
+prob = ODEProblem(opruga,u0,tspan,p)
+sol = solve(prob)
 
-U sažetku je potrebno dati koncizan opis riješenih problema, metoda korištenih za njegovo (njihovo) rješavanje, dobivenih rezultata i zaključke. U sažetku se ne navode reference. Potrebno je voditi računa da se u sažetku ne daje uvod u rad, niti pregled poglavlja rada, već daje opis namjene rada do najviše 500 riječi.
+plot(sol,vars=(1))
+plot(sol,vars=(2))
+
+function dva_tijela(du,u,p,t)
+du[1] = u[2];
+du[2] = (1/p[1])*(-p[3]*u[1]-p[4]*(u[2]-u[4]));
+du[3] = u[4];
+du[4]= (p[4]*(u[2]-u[4]))*(1/p[2])
+end
+\end{lstlisting}
+
+%Ovo je \LaTeX\ predložak za izradu završnog rada prvog ciklusa studija, izrađen za potrebe studenata Elektrotehničkog fakulteta u Sarajevu. U radu se isprepliću dvije odvojene cjeline - sadržaj i forma. Sadržaj rada je baziran na idejama iz važećeg Pravilnika o strukturi i sadržaju doktorske disertacije i magistarskog rada na Elektrotehničkom fakultetu u Sarajevu (br. 04-1-673/11, dana 17.01.2011. godine), dok je forma rada definirana strukturom i načinom korištenja .tex fajlova.
+%U fajlu Zavrsni\_rad\_BSc\_Ime\_Prezime.tex oblikovane su osnovne stranice, a naredbom \textit{include} umeću se dodatne stranice i dodaju poglavlja. 
+
+%Osim \textit{Zavrsni\_rad\_BSc\_Ime\_Prezime.tex} fajla, koristi se još i: \textit{abstract.tex} (izdvojen fajl za sažetak na bosanskom i engleskom jeziku), \textit{postavka.tex} (izdvojen fajl za postavku rada), \textit{izjava.tex} (izdvojen fajl za izjavu o autentičnosti rada), \textit{poglavlje\_1.tex} (primjer jednog poglavlja),\textit{ prilog\_1.tex} (primjer jednog priloga) i \textit{literatura.bib} (bibliografski podaci).
+
+%U sažetku je potrebno dati koncizan opis riješenih problema, metoda korištenih za njegovo (njihovo) rješavanje, dobivenih rezultata i zaključke. U sažetku se ne navode reference. Potrebno je voditi računa da se u sažetku ne daje uvod u rad, niti pregled poglavlja rada, već daje opis namjene rada do najviše 500 riječi.
 
 \vspace{1cm}
 \textbf{Ključne riječi}:  predložak, \LaTeX, ETF
