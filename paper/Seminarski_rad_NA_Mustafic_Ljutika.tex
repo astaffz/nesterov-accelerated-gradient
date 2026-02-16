@@ -58,6 +58,37 @@
 % Č, Ć, Đ, Ž, Š
 \usepackage{newtxtext,newtxmath}
 
+
+\definecolor{juliaBlue}{RGB}{0, 102, 204}
+\definecolor{juliaGreen}{RGB}{0, 153, 0}
+\definecolor{juliaGray}{RGB}{128,128,128}
+\definecolor{juliaPurple}{RGB}{153,0,153}
+
+\lstdefinelanguage{Julia}{
+  keywords={
+    function,end,if,else,elseif,while,for,begin,return,
+    break,continue,struct,mutable,import,export,using,
+    try,catch,finally,global,local,const,do,where,module
+  },
+  keywordstyle=\color{juliaBlue}\bfseries,
+  comment=[l]\#,
+  commentstyle=\color{juliaGreen}\itshape,
+  stringstyle=\color{juliaPurple},
+  sensitive=true,
+  morestring=[b]",
+  morestring=[b]'
+}
+
+\lstset{
+  language=Julia,
+  basicstyle=\ttfamily\small,
+  numbers=left,
+  numberstyle=\tiny\color{juliaGray},
+  breaklines=true,
+  frame=single,
+  showstringspaces=false
+}
+
 \fancypagestyle{plain}{%
   \fancyhf{}% Clear header/footer
   \fancyfoot[R]{{\thepage}}%
