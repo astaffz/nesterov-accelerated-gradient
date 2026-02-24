@@ -1,9 +1,119 @@
 \chapter{Zaključak i diskusija}
 
-Preporučuje se da se poglavlje "Uvod" i "Zaključak", te odgovarajuće sekcije i podsekcije ne numerišu. Ovo poglavlje bi trebalo na izvjestan način objediniti sve "kraće" zaključke date na kraju pojedinih poglavlja.
+Cilj ovog rada bio je sistematično predstaviti Nesterovljevu metodu ubrzanog gradijenta, od teorijskih osnova, kroz implementaciju, do praktičnih primjena.
+U nastavku ćemo rezimirati ključne zaključaka i diskutirati perfomans metode, relativan u odnosu na srodne izbore, te dotaći se otvorenih pitanja, mogućih pravaca daljnjeg istraživanja unutar domene teme.
 
-\section{Ostvareni ciljevi završnog rada}
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Rezime pređenih tema}
 
-U ovoj sekciji je potrebno dati jasan sumarni pregled obavljenih istraživanja i dobijenih rezultata. Rezultati trebaju biti struktuirani i prikazani prema okvirima i ciljevima postavljenim u uvodnom poglavlju.
-Potrebno je i provesti poredjenja dobivenih rezultata sa literaturom navedenom u uvodnom poglavlju, te dati diskusiju kako se dobijeni rezultati uklapaju, potvrdjuju, nadopunjuju ili su kontradiktorni onim koji su prikazani u uvodnom poglavlju.
+Nesterovljeva metoda ubrzanog gradijentnog predstavlja jedan od teoretskih
+najznačajnijih doprinosa u oblasti numeričke minimizacije i optimizacije. Nesterov je 1983. godine
+dokazao da je stopa konvergencije $O(1/k^2)$ teoretski optimalna za metode prvog reda
+na klasi glatkih konveksnih funkcija~\cite{nesterov1983method}, i da njegova metoda tu granicu
+dostiže. Ovaj rezultat nije prevaziđen u narednih četrdeset godina.
 
+U radu su implementirane i analizirane još dodatne dvije formulacije metode - Sutskeverova
+i Bengiova, izvedene iz praktičnih potreba.
+Eksperimentalni rezultati na Rosenbrockavoj funkciji, prikazani u
+Tablici~\ref{tab:nag_results}, potvrđuju da su sve tri formulacije matematički ekvivalentne
+u smislu pronalaska minimuma, ali se razlikuju u brzini konvergencije i numeričkim
+karakteristikama. Sutskeverova formulacija pokazala je najbrže dostizanje kriterija
+zaustavljanja, dok je Bengiova bila najstabilnija u smislu oscilacija oko minimuma.
+
+Vremenom, praktična primjena metode dostigla je visoku rasprostranjenost u raznim oblastima numeričke minimizacije, gdje smo se u ovom radu fokusirali na dvije najveće direktne kontribucije metode:
+dubokog učenja, gdje je rad Sutskevera i koautora~\cite{sutskever2013} označio
+prekretnicu u treniranju dubokih i rekurentnih neuronskih mreža, te obrade signala, gdje
+Nesterovljevo ubrzanje čini teorijsku osnovu FISTA algoritma~\cite{beck2009} i njegovih
+primjena u CT rekonstrukciji i kompresiranom opažanju.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Diskusija performansi i ograničenja}
+
+Ipak, pored opisanih snažnih odlika metode, NAG u praksi dolazi s nekoliko
+značajnih ograničenja koja je potrebno razmotriti.
+
+\subsection{Osjetljivost na hiperparametre}
+
+NAG zahtijeva ručno podešavanje dvije ključne hiperparametre: stope učenja $\alpha$ i
+koeficijenta momentuma $\mu$. Za razliku od adaptivnih metoda poput Adama,
+koje automatski skaliraju korake učenja za svaki parametar pojedinačno i adaptiraju se
+prema dinamici gradijenata tokom treniranja, NAG ne implementira nikakvo automatsko
+prilagođavanje ovih vrijednosti.
+To znači da korisnik mora pažljivo odabrati $\alpha$ i $\mu$ prije početka optimizacije, a taj izbor može značajno uticati na performanse algoritma.
+
+U eksperimentima
+prikazanim u ovom radu, fiksni parametri $\alpha = 0.001$ i $\mu = 0.9$ pokazali su se
+zadovoljavajućim za Rosenbrockovu funkciju, međutim ovi parametri nisu
+prenosivi. Problem sa drugačijom geometrijom funkcije gubitka generalno zahtijeva
+ponovnu kalibraciju.
+
+Loš odabir ovih parametara može rezultirati divergencijom ili
+ekstremno sporom konvergencijom. Na ovo su Sutskever i saradnici strogo ukazivali i u svom inicijalnom osvrtu.
+
+\subsection{Ograničenje na nekonveksnim funkcijama}
+
+Nesterovljeve garancije konvergencije $O(1/k^2)$ vrijede isključivo za glatke konveksne
+funkcije. Funkcije gubitka u modernom dubokom učenju \textbf{nisu konveksne, sadrže sedlaste
+    tačke, ravne regije i lokalne minimume}.
+U tim uvjetima, NAG nema formalnu garanciju
+konvergencije, a ubrzanje u odnosu na standardni gradijentni spust nije teorijski
+zagarantovano.
+Empirijski uspjeh metode u dubokom učenju često je više zasnovan na čistim
+heurističkim, a ne teoretskim osnovama~\cite{sutskever2013}.
+
+\subsection{Poređenje sa Adamom}
+
+U savremenom dubokom učenju, Adam optimizator~\cite{kingma2014} i njegovi izvodi
+(AdamW, Nadam) dominiraju u praktičnoj upotrebi, a NAG se rjeđe koristi kao samostalan
+optimizator.
+Razlog leži u adaptivnoj prirodi Adama, automatskim podešavanjem efektivne
+stope učenja po parametru, Adam je otporniji na loš odabir hiperparametara i brže
+konvergira u ranim iteracijama. Međutim, istraživanja pokazuju da dobro podešen NAG
+može postići komparabilne ili bolje rezultate od Adama, posebno gdje je
+moguće alocirati veću računsku moć za podešavanje hiperparametara~\cite{sutskever2013}.
+
+Izbor između NAG-a i Adam/Nadam optimizatora u praksi svodi se na sljedeće: NAG
+je teorijski opravdan i razumni izbor za konveksne i dobro uvjetovane probleme,
+dok Adam i Nadam dominiraju u dubokom učenju gdje je adaptivnost važnija od teoretskih
+garancija.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Pravci daljnjeg istraživanja}
+
+Na osnovu analize provedene u radu, mogu se identificirati nekoliko potencijalnih
+pravaca za daljnje istraživanje i razvoj.
+
+\textbf{Adaptivno raspoređivanje momentuma} (\textit{momentum scheduling}), mjesto
+fiksnog $\mu$, dinamičko povećanje koeficijenta momentuma tokom iteracija moglo bi
+poboljšati stabilnost konvergencije, naročito u ranim fazama optimizacije kada su
+gradijenati zašumljeni i nepouzdani.
+
+\textbf{Primjena FISTA-e u medicinskom snimanju}, kako u zdravstvenom sektoru, CT rekonstrukcija i MRI
+kompresija postaju sve zahtjevniji s povećanjem rezolucije slike, primjena FISTA i varijanti algoritma
+predstavljaju obećavajući pravac istraživanja u kojima brzina konvergencije bi znatno
+uticalo na klinički tok rada.
+
+\textbf{Veza sa kontinuiranim dinamičkim sistemima} — novija istraživanja pokazuju da
+se NAG može interpretirati kao diskretizacija određene obične diferencijalne jednačine
+drugog reda~\cite{su2016}, što otvara mogućnost analize stabilnosti i dizajna novih
+optimizatora kroz teoriju dinamičkih sistema.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Zaključak}
+
+Nesterovljeva metoda ubrzanog gradijentnog ostaje jedan od temelja moderne
+numeričke minimizacije. Unatoč jednostavnosti koncepta nad kojim se oslanja,
+dovoljna je da podstakne razvoj cijele porodice algoritama opšteprimjene, Sutskeverova i Bengiova formulacija omogućile su primjenu u dubokom učenju,
+FISTA je prenijela Nesterovljevo ubrzanje u oblast obrade signala, a putem Nadam-a je čak pronašao svrhu i u najpopularnijem modernom optimizatoru.
+
+Razumijevanje njene strukture i ograničenja predstavlja solidnu osnovu za praćenje i doprinos aktuelnim
+istraživanjima u oblasti optimizacije i mašinskog učenja.
+Činjenica da je metoda, objavljena 1980. godine, i danas prisutna
+u vodećim okvirima za duboko učenje i ostvaruje nivo konvergencije koji još uvijek nije značajno prevažiđen, svjedoči o
+njenoj fundamentalnoj važnosti kroz vremena.
+
+Razumijevanje strukture metode, kao i ograničenja predstavlja solidnu osnovu za praćenje i doprinos aktuelnim
+istraživanjima u oblasti numeričke minimizacije, mašinskog učenja, te čak i obrade signala.
+U svakom od tih slučajeva, suštinska ideja ostaje ista, umjesto da reaguje na
+gradijent tamo gdje se trenutno nalazi, metoda \textit{'osjeti'} budući položaj i ispravlja
+kurs unaprijed. Ta jednostavna modifikacija, kako je pokazano u ovom radu, ima veoma duboke posljedice u eksponencijalnom razvoju algoritama optimizacije i njihovoj primjeni u savremenim problemima.
