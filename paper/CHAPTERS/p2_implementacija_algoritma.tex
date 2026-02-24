@@ -56,8 +56,9 @@ prilagođavaju originalnu metodu kako bi je učinili pogodnijom za primjenu u \t
 
 % ─────────────────────────────────────────────────────────────────────────────
 \section{Sutskeverova modifikacija (SNAG)}
+\label{sec:sutskever}
 
-Trideset godina nakon Nesterovljeve publikacije, Sutskever i koautori~\cite{sutskever2013}
+Trideset godina nakon Nesterovljeve publikacije, Sutskever i saradnika~\cite{sutskever2013}
 objavljuju rad u kojem, dotada slaboprimjenutoj, Nesterovljevoj metodi pridaju značaj u kontekstu dubokog učenja \textit{(eng. deep learning)}.
 Uz jednostavnu reformulaciju originalne metode, autori demonstriraju značajna ubrzanja u
 treniranju dubokih neuronskih mreža u odnosu na standardni gradijentni spust s momentumom.
@@ -111,7 +112,8 @@ Ova modifikacija je danas prisutna u mnogim softverskim okvirima za \textit{dubo
     učenje}, kao što je \textbf{PyTorch}.
 
 % ─────────────────────────────────────────────────────────────────────────────
-\section{Bengiova formulacija metode (BNAG)}
+\section{Bengiova modifikacija (BNAG)}
+\label{sec:bengio}
 
 Međutim, iako je pogodnija za primjenu u dubokom učenju, Sutskeverova formulacija
 nije nužno najbolji izbor za sve primjene Nesterovljeve metode, posebno u oblastima gdje je potrebna detaljna analiza stabilnosti i konvergencije, kao što su \textit{rekurentne neuronske mreže}.
@@ -221,7 +223,7 @@ Primjenom sve tri formulacije NAG metode na Rosenbrockovu funkciju sa startnom t
 $(x_0,y_0) = (-1.5,\; 1.5)$ i parametrima $\alpha = 0.001$, $\mu = 0.9$, dobijeni su sljedeći rezultati:
 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{DIJAGRAMI/rosenbrock_nag_paths.png}
     \caption{Putanje konvergencije sve tri formulacije NAG metode na Rosenbrockovima funkciji.
@@ -265,6 +267,4 @@ U ovom poglavlju prikazana je implementacija Nesterovljeve ubrzanog gradijentnog
 tri općeprimjenute formulacije, klasičnoj, Sutskeverovoj i Bengiovoj, te je svaka demonstrirana na
 Rosenbrockovima funkciji kao standardnom \textit{benchmark}-u.
 Implementacije su u skladu sa teoretskim formulacijama iz prethodnog poglavlja, uz eksplicitno
-naglašene aproksimacije i ograničenja tamo gdje postoje. U narednom poglavlju slijedi komparativna
-analiza dobijenih rezultata, diskusija prednosti i nedostataka svakog pristupa, te poređenje sa
-rezultatima iz relevantne literature.
+naglašene aproksimacije i ograničenja tamo gdje postoje. U narednim poglavljima slijedi diskusija o praktičnoj primjene metode, njenim prednostima i nedostacima, te preporuke za daljnja istraživanja i primjene u različitim oblastima numeričke optimizacije.

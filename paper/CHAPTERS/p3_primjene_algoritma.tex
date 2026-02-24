@@ -1,20 +1,211 @@
 \chapter{Primjene algoritma u praksi}
 
-Istraživanje se izlaže organizirano, koncizno i konzistentno kroz dva ili više odvojenih poglavlja, sa  pregledom teoretskih osnova na kojima su bazirana i kraćom diskusijom dobijenih rezultata. Ono što je izuzetno važno jeste da se dobiveni rezultati istraživanja konstantno objektivno porede sa postojećim rezultatima u literaturi ili oblasti istraživanja, te sistematično ukazuje na prednosti i nedostatke autorskog pristupa.
-Izostanak komparacije rezultata istraživanja dobivenih od strane autora sa konkurentnim algoritmima, metodama i pristupima pokazuje nepostojanje akademske zrelosti, nedovoljnu posvećenost u istraživanju odgovarajuće naučne oblasti i vrlo često ukazuje na loš kvalitet disertacije/rada.
+Teoretska analiza i implementacija Nesterovljeve metode iz prethodnih poglavlja postavlja
+osnovu za razumijevanje njene primjene u realnim problemima. U ovom poglavlju razmotriti ćemo
+oblasti u kojima NAG metoda pronalazi direktnu i dokumentovanu primjenu, naročito u
+treniranje dubokih neuronskih mreža te obrada signala i kompresiranog opažanja.
 
-U radu se za formiranje poglavlja koriste sekcije, podsekcije, podpodsekcije, paragrafi i podparagrafi kao u primjerima koji slijedi.
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Primjene metode u dubokom učenju}
 
-\section{Primjer sekcije}
-Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije.
-\subsection{Primjer podsekcije}
-Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije.
-\subsubsection{Primjer podpodsekcije}
-Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije.
-\paragraph{Primjer paragrafa}
-Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa.
-\subparagraph{Primjer podparagrafa}
-Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa.
+Najšira i najvažnija praktična primjena Nesterovljeve metode danas je u dubokom učenju,
+gdje služi kao temelj za treniranje kompleksnih arhitektura.
+
+Rad Sutskevera i saradnika iz 2013. godine predstavlja prekretnicu
+jer je dokazao da se duboke neuronske mreže (DNN) i rekurentne neuronske mreže (RNN)
+mogu uspješno trenirati metodama prvog reda do nivoa performansi koji su ranije bili dostižni samo uz Hessian-Free (HF) optimizaciju.~\cite{sutskever2013}.
+
+U suštini, treniranje duboke neuronske mreže je rješavanje ogromnog problema optimizacije milijardu parametara, gdje minimiziramo funkciju gubitka L, \textit{koja je nelinearna, neglatka i često loše uvjetovana.}
+Matematički zapisano: $\theta^* = \arg\min_{\theta} \mathcal{L}(\theta)$
+
+\textbf{Metode prvog reda} koriste samo informacije o gradijentu funkcije gubitka, što ih čini skalabilnim i efikasnim za velike modele.
+\textbf{Metode drugog reda} koriste informacije o Hessianu (drugom izvodu), što može biti preciznije ali je računski neizvodljivo za modele sa milijardama parametara.
+
+\textbf{Hessian-Free optimizacija}~\cite{martens2010} je metoda drugog reda koja koristi aproksimaciju Hessiana, ali i dalje zahtijeva značajne resurse, koja je do primjene Nesterovljeve metode predstavljala standard za treniranje dubokih modela.
+
+Do 2013. godine, treniranje dubokih modela bilo je ograničeno na specifične arhitekture i probleme, gdje su se metode prvog reda smatrale nedovoljno stabilnim za veoma duboke mreže, posebno u slučaju rekurentnih neuronskih mreža koje pate od problema nestajućih i eksplodirajućih gradijenata. Smatralo se da je za efikasno učenje u takvim modelima neophodno koristiti metode drugog reda koje uzimaju u obzir zakrivljenost funkcije gubitka.
+
+Rad Sutskevera i saradnika pokazao je da pažljiv izbor parametara, incijalizacije i rasporedu učenja \textit{(learning rate schedule)} metode prvog reda, posebno gradijentni spust sa momentumom i Nesterovljevim ubrzanjem, mogu postići performanse uporedive sa Hessian-Free optimizacijom, uz znatno manju računsku složenost i veću skalabilnost.
+Ovo je predstavljao ogroman iskorak u polju \textit{dubokog učenja}, gdje su modeli postali jednostavniji za implementaciju, efikasni na GPU arhitetkurama i lako skalabilni na milione i milijarde parametara funkcije.
+
+\subsection{Primjena u modernim softverskim okvirima}
+
+Kao što je spomenuto u Poglavlju \ref{sec:sutskever}. Metoda je implementirana unutar \textbf{PyTorch framework-a}, gdje se čak aktivira
+jednom izmjenom u pozivu optimizatora:
+
+\begin{lstlisting}[frame=single, language=Python, caption={Aktivacija NAG-a u PyTorch-u},
+    numbers=left, numberstyle=\tiny,
+    xleftmargin=0.05\textwidth, xrightmargin=0.05\textwidth]
+import torch.optim as optim
+
+optimizer = optim.SGD(
+    model.parameters(),
+    lr=0.01,
+    momentum=0.9,
+    nesterov=True       # NAG umjesto klasicnog momentuma
+)
+\end{lstlisting}
+
+Isto važi i za \textbf{Keras/TensorFlow okvire}:
+
+\begin{lstlisting}[frame=single, language=Python, caption={Aktivacija NAG-a u Keras-u},
+    numbers=left, numberstyle=\tiny,
+    xleftmargin=0.05\textwidth, xrightmargin=0.05\textwidth]
+from tensorflow.keras.optimizers import SGD
+
+optimizer = SGD(learning_rate=0.01, momentum=0.9, nesterov=True)
+\end{lstlisting}
+
+\subsection{Adam i NAdam optimizatori}
+
+Razvoj optimizacionih metoda u dubokom učenju doveo je do potrebe za algoritmima koji istovremeno obezbjeđuju stabilnost momentuma i adaptivno podešavanje brzine učenja \textit{(learning rate-a)}.
+U tu svrhu, istraživači \textbf{Kingma i Ba} su razvili \textbf{Adam} (Adaptive Moment Estimation) optimizator~\cite{kingma2014}, koji je \textbf{T. Dozat} proširio sa \textbf{NAdam}~\cite{dozat2016}, koja integriše ubrzanje Nesterovljeve metode u Adam-ov okvir.
+
+Obje metode pripadaju metodama prvog reda i zasnovane su na procjeni statističkih momenata gradijenta.
+Neka je $g_t = \nabla \mathcal{L}(\theta_t)$ gradijent funkcije gubitka u trenutku $t$. Adam održava dvije eksponencijalne pokretne sredine:
+
+\begin{equation}
+    m_t = \beta_1 m_{t-1} + (1-\beta_1) g_t
+\end{equation}
+
+\begin{equation}
+    v_t = \beta_2 v_{t-1} + (1-\beta_2) g_t^2
+\end{equation}
+
+gdje je:
+\begin{itemize}
+    \item $m_t$ procjena prvog momenta (srednja vrijednost gradijenta),
+    \item $v_t$ procjena drugog momenta (srednja vrijednost kvadrata gradijenta),
+    \item $\beta_1, \beta_2 \in (0,1)$ faktori zaborava.
+\end{itemize}
+
+Budući da su $m_t$ i $v_t$ inicijalno pristrasne procjene, uvodi se korekcija pristrasnosti:
+
+\begin{equation}
+    \hat{m}_t = \frac{m_t}{1-\beta_1^t},
+    \qquad
+    \hat{v}_t = \frac{v_t}{1-\beta_2^t}.
+\end{equation}
+
+\begin{equation}
+    \theta_{t+1} = \theta_t - \eta
+    \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \varepsilon},
+\end{equation}
+
+gdje je $\eta$ brzina učenja \textit{(learning rate)}, a $\varepsilon$ mala konstanta uvedena za numeričku stabilizaciju korekcije.
+Adam se može interpretirati kao kombinacija momentuma (kroz prvi moment) i adaptivnog skaliranja koraka (kroz drugi moment), čime se omogućava automatsko prilagođavanje brzine učenja za svaki parametar pojedinačno.
+
+\medskip
+
+\textbf{Nadam} (Nesterov-accelerated Adam) predstavlja modifikaciju Adam algoritma u kojoj se standardni momentum član zamjenjuje Nesterovljevim \textit{look-ahead} principom. Ideja je da se u ažuriranju parametara koristi prediktivna korekcija zasnovana na procijenjenom budućem položaju u prostoru parametara.
+Ažuriranje kod Nadam optimizatora može se zapisati kao:
+
+\begin{equation}
+    \theta_{t+1} = \theta_t - \eta
+    \frac{\beta_1 \hat{m}_t + \frac{(1-\beta_1)}{1-\beta_1^t} g_t}
+    {\sqrt{\hat{v}_t} + \varepsilon}.
+\end{equation}
+
+Na taj način Nadam zadržava adaptivnu prirodu Adam optimizatora, ali dodatno uvodi Nesterovljevo ubrzanje, što može dovesti do brže konvergencije, posebno u slučajevima sa kompleksnom (nelinearnom) dinamikom gradijenata.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{FISTA - Primjena algoritma u obradi signala i kompresiranog opažanja}
+
+Dalje, van oblasti dubokog učenja, najznačajnija izvedba NAG metode je zasigurno
+\textbf{FISTA} (\textit{Fast Iterative Shrinkage-Thresholding Algorithm}), koju su
+razvili \textbf{Beck i Teboulle} 2009. godine~\cite{beck2009}.
+
+\subsection{Motivacija i problem}
+
+FISTA adresira klasu \textit{linearnih inverznih problema} koji se
+tipično javljaju u obradi signala i slika. U tim problemima posmatrani
+signal $b \in \mathbb{R}^m$ nastaje kao rezultat sistema linearnih mjerenja
+
+\begin{equation}
+    b = A x^\ast + \varepsilon,
+\end{equation}
+
+gdje je:
+\begin{itemize}
+    \item $x^\ast \in \mathbb{R}^n$ nepoznati originalni signal,
+    \item $A \in \mathbb{R}^{m \times n}$ matrica mjerenja (npr. operator zamućenja,
+          projekcioni operator u CT-u),
+    \item $\varepsilon$ šum mjerenja.
+\end{itemize}
+
+Cilj inverznog problema jeste rekonstrukcija $x^\ast$ iz mjerenja $b$.
+Međutim, u praksi je matrica $A$ često loše uslovljena ili je problem
+nedovoljno određen ($m < n$), što znači da direktna inverzija nije
+moguća ili je numerički nestabilna. Ovakvi problemi nazivaju se
+\textit{ill-conditioned}, tj. loše uslovljeni problemi.
+
+Da bi se obezbijedila stabilnost rješenja, uvodi se regularizacija,
+čime se problem formuliše kao optimizacija:
+
+\begin{equation}
+    \min_{x \in \mathbb{R}^n} \; F(x) = f(x) + g(x),
+\end{equation}
+
+gdje:
+\begin{itemize}
+    \item $f(x)$ predstavlja mjeru slaganja sa podacima (data fidelity term),
+          najčešće oblika
+          \[
+              f(x) = \frac{1}{2}\|Ax - b\|_2^2,
+          \]
+    \item $g(x)$ predstavlja član za regulaciju koji enkodira dotadašnje
+          znanje o strukturi rješenja (npr. rijetkost, glatkoću ili
+          ograničenja).
+\end{itemize}
+
+Tipičan primjer je $\ell_1$ regularizacija
+\[
+    g(x) = \lambda \|x\|_1,
+\]
+koja promoviše rijetka rješenja i igra ključnu ulogu u kompresiranom
+opažanju i LASSO regresiji.
+gdje je $f$ glatka konveksna funkcija (npr. $\ell_2$ greška rekonstrukcije), a $g$
+neravna konveksna regularizacija (npr. $\ell_1$ norma za rijetke signale).
+
+Prethodnik FISTA-e, algoritam ISTA, rješavao je ovaj problem ali s konvergencijom reda $O(1/k)$,
+što ga čini nepraktičnim za veće probleme.
+
+\subsection{FISTA kao primjena NAG ubrzanja}
+
+Ključna ideja u radu Becka i Teboullea jeste direktna primjena Nesterovljevog
+principa ubrzanja na ISTA algoritam. FISTA zadržava računsku jednostavnost
+ISTA-e, ali postiže globalnu stopu konvergencije koja je teorijski i praktično značajno
+bolja. Konkretno, stopa konvergencije FISTA-e je $O(1/k^2)$,
+dok je kod ISTA-e, CGDA i SLA algoritama stopa konvergencije $O(1/k)$.
+
+Algoritam se može prikazati sljedećim koracima:
+
+\begin{align}
+    x_k     & = \text{prox}_{\alpha g}\!\left( y_k - \alpha \nabla f(y_k) \right) \\
+    t_{k+1} & = \frac{1 + \sqrt{1 + 4t_k^2}}{2}                                   \\
+    y_{k+1} & = x_k + \frac{t_k - 1}{t_{k+1}}\,(x_k - x_{k-1})
+\end{align}
+
+gdje $\text{prox}_{\alpha g}$ označava aproksimaciju regulatizatora $g$, a
+$t_k$ je koeficijent ubrzanja analogan Nesterovljevom momentumu. \textbf{pravo ovaj član
+    donosi $O(1/k^2)$ ubrzanje u odnosu na ISTA-u.}
+
+\subsection{Primjene FISTA-e}
+
+U praksi, FISTA pronalazi neke od vrlo ključnih oblasti i primjena, kao što su:
+
+\textbf{LASSO regresija}, tip linearne regresije gdje se traži rješenje koje je rijetko i stabilno u prisustvu šuma.
+
+\textbf{Kompresirano opažanje} (\textit{compressed sensing}), gdje se rekonstruišu rijetki signali iz ograničenog broja linearnih mjerenja,
+pri čemu $\ell_1$ minimizacija predstavlja efikasnu konveksnu relaksaciju problema.
+
+\textbf{Rekonstrukcija CT slika}, u smislu formulacija problema tomografske
+rekonstrukcije kao inverznog problema, gdje FISTA omogućava
+bržu i stabilniju konvergenciju u odnosu na standardne metode.
+
+\textbf{Restauracija slika}, u smislu uklanjanja šuma i zamućenja, što je baš kao primjer opisan u originalnom radu
+Becka i Teboullea~\cite{beck2009}.
+
 
 \begin{center}
     \vspace{0.5cm}
@@ -22,7 +213,16 @@ Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podpara
     \vspace{0.3cm}
 \end{center}
 
-Na kraju svakog poglavlja, najbolje je dati jedan kraći zaključak koji ukratko objedinjuje sve najvažnije zaključke iz tog poglavlja. Taj kraći zaključak treba da služi kao poveznica između poglavlja koje se upravo završilo, i narednog poglavlja koje tek treba da počne. Ovaj zaključak je poželjno odvojiti bilo kao odvojenu podsekciju poglavlja nazvanu "Zaključak", bilo kao jednostavno izdvojeni dio teksta razmaknut zvjezdicama.
+U ovom poglavlju prikazane su ključne oblasti praktične primjene
+Nesterovljeve metode. U dubokom učenju, NAG je odigrao
+važnu ulogu u tranziciji ka skalabilnim metodama prvog reda,
+što je omogućilo efikasno treniranje dubokih neuronskih mreža velikih dimenzija.
 
-Kratak primjer zaključka za ovo poglavlje: U ovom poglavlju je pokazano kako se formiraju centralna poglavlja u radu/disertaciji. U nastavku će biti pokazano kako se piše konačan zaključak, te dati određeni tehnički podaci oko formatiranja teksta, slika i formula.
+U oblasti obrade signala i kompresiranog opažanja,
+Nesterovljevo ubrzanje čini teorijsku i algoritamsku osnovu
+FISTA metode, koja danas predstavlja standard u rješavanju
+inverznih problema.
 
+U narednom poglavlju slijedi zaključna analiza
+rezultata rada, razmatranje ograničenja metode
+te prepoznavanje i diskusija o potencijalnim pravcima daljneg istraživanja.
