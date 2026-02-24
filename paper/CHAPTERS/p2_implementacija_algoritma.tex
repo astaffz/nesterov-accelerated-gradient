@@ -1,28 +1,270 @@
+
+\setlength{\parskip}{1em}
+
 \chapter{Implementacija algoritma}
 
-Istraživanje se izlaže organizirano, koncizno i konzistentno kroz dva ili više odvojenih poglavlja, sa  pregledom teoretskih osnova na kojima su bazirana i kraćom diskusijom dobijenih rezultata. Ono što je izuzetno važno jeste da se dobiveni rezultati istraživanja konstantno objektivno porede sa postojećim rezultatima u literaturi ili oblasti istraživanja, te sistematično ukazuje na prednosti i nedostatke autorskog pristupa.
-Izostanak komparacije rezultata istraživanja dobivenih od strane autora sa konkurentnim algoritmima, metodama i pristupima pokazuje nepostojanje akademske zrelosti, nedovoljnu posvećenost u istraživanju odgovarajuće naučne oblasti i vrlo često ukazuje na loš kvalitet disertacije/rada.
+U prethodnom poglavlju izložene su teoretske osnove Nesterovljeve ubrzanog gradijentnog metoda za minimizaciju, uključujući formalnu analizu konvergencije i poređenje sa klasičnim gradijentnim metodama.
+U ovom poglavlju prelazimo na \textbf{konkretnu implementaciju metode} u programskom jeziku
+\textit{Julia}, uz primjenu na poznatom problemu iz oblasti numeričke optimizacije. Cilj je demonstrirati
+kako i na koje se načine teoretska formulacija prevodi u funkcionalan kod, te vizualno potvrditi konvergentno
+ponašanje opisano u teoriji.
 
-U radu se za formiranje poglavlja koriste sekcije, podsekcije, podpodsekcije, paragrafi i podparagrafi kao u primjerima koji slijedi.
+\textit{Implementacija metode na osnovu teoretskih osnova iz prethodnog poglavlja se može predstaviti sljedećim programskim kodom:}
 
-\section{Primjer sekcije}
-Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije. Ovo je primjer sekcije.
-\subsection{Primjer podsekcije}
-Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije. Ovo je primjer podsekcije.
-\subsubsection{Primjer podpodsekcije}
-Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije. Ovo je primjer podpodsekcije.
-\paragraph{Primjer paragrafa}
-Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa. Ovo je primjer paragrafa.
-\subparagraph{Primjer podparagrafa}
-Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa. Ovo je primjer podparagrafa.
+\begin{lstlisting}[frame=single, language=Julia, caption={Standardna Nesterovljeva metoda (NAG)}, numbers=left, numberstyle=\tiny, xleftmargin=0.05\textwidth, xrightmargin=0.05\textwidth]
+function nag(x0, func, gradient;
+             learning_rate  = 0.001,
+             momentum_coeff = 0.9,
+             max_iter       = 5000,
+             eps            = 1e-7)
 
+    v    = zeros(length(x0))
+    x    = copy(x0)
+
+    for i in 1:max_iter
+        look_ahead = x .+ momentum_coeff .* v
+        grad_x     = gradient(look_ahead)
+        if norm(grad_x) < eps
+            break
+        end
+        v = momentum_coeff .* v .- learning_rate .* grad_x
+        x = x .+ v
+    end
+
+    return (x=x, f=func(x))
+end
+\end{lstlisting}
+
+Funkcija prima početnu tačku \texttt{x0}, funkciju cilja \texttt{func} i njen gradijent
+\texttt{gradient}, uz opcionalne parametre: stopu učenja $\alpha$ (\texttt{learning\_rate}),
+koeficijent momentuma $\mu$ (\texttt{momentum\_coeff}), maksimalni broj iteracija
+(\texttt{max\_iter}) i toleranciju zaustavljanja (\texttt{eps}).
+
+Unutar petlje, metoda prvo računa \textit{look-ahead} poziciju, zatim evaluira gradijent
+na toj poziciji, te ažurira vektor brzine spusta $v$ i trenutnu poziciju $x$.
+Petlja se prekida kada norma gradijenta padne ispod zadate tolerancije \texttt{eps},
+ili kada se dostigne maksimalni broj iteracija \texttt{max\_iter}.
+
+U ovoj i narednim implementacijama pretpostavlja se da je gradijent funkcije analitički
+poznat, što je u skladu sa uvjetima konvergencije metode. Alternativno, moguće je gradijent funkcije izvesti metodama numeričkog diferenciranja, no to bespotrebno komplicira izvedbu
+metode, te nije predmet ovog rada.
+
+
+Relevatno je istaknuti da u praktične primjene, pored standardne formulacije, u literaturi se češće pojavljuju \textbf{i druge, ekvivalentne formulacije Nesterovljeve metode}. Među najpoznatijima su formulacije koje su predložili \textbf{\textit{Sutskever et al.}}~(2013) te \textbf{\textit{Bengio et al.}}~(2012), koje
+prilagođavaju originalnu metodu kako bi je učinili pogodnijom za primjenu u \textbf{treniranju
+    rekurentnih i dubokih neuronskih mreža \textit{(RNN \& DNN)}}.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Sutskeverova modifikacija (SNAG)}
+
+Trideset godina nakon Nesterovljeve publikacije, Sutskever i koautori~\cite{sutskever2013}
+objavljuju rad u kojem, dotada slaboprimjenutoj, Nesterovljevoj metodi pridaju značaj u kontekstu dubokog učenja \textit{(eng. deep learning)}.
+Uz jednostavnu reformulaciju originalne metode, autori demonstriraju značajna ubrzanja u
+treniranju dubokih neuronskih mreža u odnosu na standardni gradijentni spust s momentumom.
+
+Iako se ovaj rad često navodi kao ključni faktor popularizacije i opće primjene NAG metode u oblastima dubokog učenja,
+postoje slične ideje koje su nezavisno razvijene i primjenjene u drugim oblastima numeričke minimizacije.
+
+Ključna ideja Sutskeverove modifikacije je \textbf{\textit{'fazno'} pomjeranje metode za pola iteracije}.
+Umjesto redoslijeda \textit{,,gradijent $\to$ momentum``}, granica iteracije se pomjera tako da se
+dobije redoslijed \textit{,,momentum $\to$ gradijent``}. Rezultat je matematički ekvivalentna
+formulacija koja radi nad parametrima $\phi$ umjesto $\theta$, a koja se pokazuje pogodnijom za
+potrebe \textit{dubokog učenja}~\cite{sutskever2013}.
+
+\begin{equation}
+    \phi_{t+1} = \phi_t + \mu v_t - \alpha \nabla f(\phi_t + \mu v_t)
+\end{equation}
+
+\noindent Prednost ove formulacije je ta da parametri $\phi$ na kraju svake iteracije već su postavljeni na \textit{look-ahead}
+poziciju. Sljedeća iteracija stoga automatski evaluira gradijent na ispravnom mjestu, te nema potrebe za
+\textbf{eksplicitnim održavanjem dva odvojena vektora parametara} kao u
+originalnoj formulaciji, ostajući \textbf{u skladu sa standardnim gradijentnim
+    metodama}.
+
+
+\textit{Implementacija metode sa ovom modifikacijom se može predstaviti sljedećim programskim kodom:}
+
+\begin{lstlisting}[frame=single, language=Julia, caption={Sutskeverova formulacija NAG metode}, numbers=left, numberstyle=\tiny, xleftmargin=0.05\textwidth, xrightmargin=0.05\textwidth]
+function nag_sutskever(x0, func, gradient;
+                       learning_rate  = 0.001,
+                       momentum_coeff = 0.9,
+                       max_iter       = 5000,
+                       eps            = 1e-7)
+
+    v    = zeros(length(x0))
+    x    = copy(x0)
+
+    for i in 1:max_iter
+        v_prev = copy(v)
+        v      = momentum_coeff .* v .- learning_rate .* gradient(x .+ momentum_coeff .* v)
+        x      = x .+ v
+        if norm(grad_x) < eps
+            break
+        end
+    end
+
+    return (x=x, f=func(x))
+end
+\end{lstlisting}
+
+Ova modifikacija je danas prisutna u mnogim softverskim okvirima za \textit{duboko
+    učenje}, kao što je \textbf{PyTorch}.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Bengiova formulacija metode (BNAG)}
+
+Međutim, iako je pogodnija za primjenu u dubokom učenju, Sutskeverova formulacija
+nije nužno najbolji izbor za sve primjene Nesterovljeve metode, posebno u oblastima gdje je potrebna detaljna analiza stabilnosti i konvergencije, kao što su \textit{rekurentne neuronske mreže}.
+
+Bengiova formulacija~\cite{bengio2012}. nastaje kao prikladna alternativa Sutskeverovoj.
+Ključna prednost je što \textbf{ne zahtijeva računanje gradijenta
+    na nestandardnoj poziciji} — dovoljno je samo modificirati koeficijente u proračunu spusta,
+što je znatno jednostavnija izmjena u kodnoj bazi koja već koristi standardni gradijentni
+spust sa momentumom
+
+Razvijanjem Sutskeverove formulacije i sređivanjem članova, dobija se matematički ekvivalentan
+izraz:
+
+\begin{equation}
+    \theta_{t+1} = \theta_t + \mu_{t-1}\mu_t\, b_t - (1 + \mu_t)\,\alpha_t\, \nabla f(\theta_t)
+\end{equation}
+
+\noindent gdje je:
+
+\begin{equation}
+    b_{t+1} = \mu_t\, b_t - \alpha_t\, \nabla f(\theta_t)
+\end{equation}
+
+Bengiova formulacija pokazuje da je \textit{look-ahead} perspektiva samo jedan način gledanja te
+da se NAG ekvivalentno može posmatrati kao momentum s \textbf{korigiranim koeficijentima}, gdje
+metoda primjenjuje \textbf{veći efektivni korak gradijenata} i \textbf{manji efektivni korak
+    momentuma}, što se predstavlja kao pogodnije za analizu stabilnosti treniranja \textit{RNN}.
+
+\begin{lstlisting}[frame=single, language=Julia, caption={Bengiova formulacija NAG metode}, numbers=left, numberstyle=\tiny, xleftmargin=0.05\textwidth, xrightmargin=0.05\textwidth]
+function nag_bengio(x0, func, gradient;
+                    learning_rate  = 0.001,
+                    momentum_coeff = 0.9,
+                    max_iter       = 5000,
+                    eps            = 1e-7)
+
+    v    = zeros(length(x0))
+    x    = copy(x0)
+
+    for i in 1:max_iter
+        grad = gradient(x)
+        if norm(grad) < eps
+            break
+        end
+
+        if i == 1
+            x = x .- learning_rate .* grad
+        else
+            x = x .+ momentum_coeff^2 .* v .- (1 + momentum_coeff) .* learning_rate .* grad
+            v = momentum_coeff .* v .- learning_rate .* grad
+        end
+    end
+
+    return (x=x, f=func(x))
+end
+\end{lstlisting}
+
+
+% ─────────────────────────────────────────────────────────────────────────────
+
+
+U implementaciji Bengiove formulacije uvodi se blago odstupanje od teorijske: proizvod
+$\mu_{t-1}\mu_t$ aproksimira se kao $\mu^2$, što je ispravno jedino kada je $\mu = \text{const.}$
+kroz sve iteracije. U teoretskoj formulaciji $\mu_t$ može biti raspoređen \textit{(scheduled)}
+po iteracijama, što bi zahtijevalo eksplicitno praćenje $\mu_{t-1}$.
+
+Dodatno, vektor $b_t$ iz teoretske formulacije predstavlja razliku parametara
+$\phi_{t+1} - \phi_t$, dok implementacija koristi $v_t$ koji se ažurira standardnom momentum
+formulom $v = \mu v - \alpha \nabla f(\theta)$, što je ekvivalentno samo pod pretpostavkom
+$\mu = \text{const.}$ Za potrebe ovog rada, gdje je $\mu$ fiksan, ova aproksimacija ne uvodi
+grešku. Slučajevi u kojem je greška aproksimacije nezamerljiva su pretežno specifični, te u svrhu bolje vizualizacije nisu razmotreni u sklopu ovog rada, što naravno nije slučaj i u citiranoj literaturi.~\cite{bengio2012}.
+
+No, zbog uzete pretpostavke, posebnu pažnju zahtijeva prva iteracija ($i = 1$):
+Zbog $\mu_{t-1}\mu_t = 0 \cdot \mu_t = 0$ slijedi da $\mu_{t-1}\mu_t \neq \mu_{t}^2$
+
+Rješenje ove anomalije preuzeto je od Jamesa Melvillea, autora paketa \texttt{mize} za algoritme numeričke minimizacije funkcija u
+programskom jeziku R~\cite{melville2016}, gdje se ažuriranje vektora brzine preskače.
+
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Primjer i vizualizacija primjene metode}
+
+\subsection{Rosenbrockova funkcija}
+
+\textbf{Rosenbrockova funkcija}~\cite{rosenbrock1960} $\textit{(poznata kao i 'banana funkcija')}$ je klasična testna funkcija u oblasti
+numeričke optimizacije, definisana kao:
+
+\begin{equation}
+    f(x, y) = a(1 - x)^2 + b(y - x^2)^2, \qquad a = 1,\; b = 100
+\end{equation}
+
+Globalni minimum se nalazi u tački $(x, y) = (1, 1)$, gdje je $f(1, 1) = 0$. Funkcija je
+poznata po svojoj \textbf{uskoj, zakrivljenoj dolini} koja vodi prema minimumu. Dolina je lako
+pronađena, ali konvergencija unutar nje je spora zbog zakrivljenosti i loše uvjetovanosti
+\textit{(ill-conditioning)}. Upravo zbog toga se koristi kao standardni \textit{benchmark}
+za testiranje metoda minimizacije, posebno gradijentnih metoda s momentumom.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.75\textwidth]{DIJAGRAMI/rosenbrock_contour.png}
+    \caption{Konturni grafik Rosenbrockove funkcije sa označenim globalnim minimumom $f(1,1)=0$.}
+    \label{fig:rosenbrock}
+\end{figure}
+
+\subsection{Rezultati minimizacije}
+
+Primjenom sve tri formulacije NAG metode na Rosenbrockovu funkciju sa startnom tačkom
+$(x_0,y_0) = (-1.5,\; 1.5)$ i parametrima $\alpha = 0.001$, $\mu = 0.9$, dobijeni su sljedeći rezultati:
+
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{DIJAGRAMI/rosenbrock_nag_paths.png}
+    \caption{Putanje konvergencije sve tri formulacije NAG metode na Rosenbrockovima funkciji.
+        Klasična formulacija (bijela), Sutskeverova (crvena), Bengiova (cijan).}
+    \label{fig:nag_paths}
+\end{figure}
+
+
+Sa Slike~\ref{fig:nag_paths} jasno se vidi da klasična i Sutskeverova formulacija prate
+gotovo ekvivalentnu putanju konvergencije, dok Bengiova formulacija značajno odstupa u
+pojedinim iteracijama, no ipak uspijeva konvergirati u očekivanom broju koraka.
+Kao što se vidi iz tablice~\ref{tab:nag_results}, Sutskeverova formulacija postiže
+konvergenciju znatno ranije od preostale dvije.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Rezultati minimizacije Rosenbrockove funkcije Nesterovljevom metodom,
+        $(x_0, y_0) = (-1.5,\; 1.5)$, $\alpha = 0.001$, $\mu = 0.9$.}
+    \label{tab:nag_results}
+    \begin{tabular}{lccc}
+        \hline
+        \textbf{Formulacija} & \textbf{Broj iteracija} & \textbf{$x^*$}         & \textbf{$f^*$}          \\
+        \hline
+        NAG (klasična)       & 3576                    & $(1.00000,\; 1.00000)$ & $1.259 \times 10^{-14}$ \\
+        NAG (Sutskever)      & 1153                    & $(0.99744,\; 0.99488)$ & $6.556 \times 10^{-6}$  \\
+        NAG (Bengio)         & 3617                    & $(1.00000,\; 1.00000)$ & $1.247 \times 10^{-14}$ \\
+        \hline
+    \end{tabular}
+\end{table}
+
+
+% ─────────────────────────────────────────────────────────────────────────────
 \begin{center}
     \vspace{0.5cm}
     *\hspace{2cm}*\hspace{2cm}*
     \vspace{0.3cm}
 \end{center}
 
-Na kraju svakog poglavlja, najbolje je dati jedan kraći zaključak koji ukratko objedinjuje sve najvažnije zaključke iz tog poglavlja. Taj kraći zaključak treba da služi kao poveznica između poglavlja koje se upravo završilo, i narednog poglavlja koje tek treba da počne. Ovaj zaključak je poželjno odvojiti bilo kao odvojenu podsekciju poglavlja nazvanu "Zaključak", bilo kao jednostavno izdvojeni dio teksta razmaknut zvjezdicama.
 
-Kratak primjer zaključka za ovo poglavlje: U ovom poglavlju je pokazano kako se formiraju centralna poglavlja u radu/disertaciji. U nastavku će biti pokazano kako se piše konačan zaključak, te dati određeni tehnički podaci oko formatiranja teksta, slika i formula.
-
+U ovom poglavlju prikazana je implementacija Nesterovljeve ubrzanog gradijentnog metoda razvijenog u
+tri općeprimjenute formulacije, klasičnoj, Sutskeverovoj i Bengiovoj, te je svaka demonstrirana na
+Rosenbrockovima funkciji kao standardnom \textit{benchmark}-u.
+Implementacije su u skladu sa teoretskim formulacijama iz prethodnog poglavlja, uz eksplicitno
+naglašene aproksimacije i ograničenja tamo gdje postoje. U narednom poglavlju slijedi komparativna
+analiza dobijenih rezultata, diskusija prednosti i nedostataka svakog pristupa, te poređenje sa
+rezultatima iz relevantne literature.
