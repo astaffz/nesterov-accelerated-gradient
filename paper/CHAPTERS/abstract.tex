@@ -2,31 +2,37 @@
 
 \section*{Sažetak}
 
-U ovom radu ćemo se baviti metodom za nalaženje minimuma funkcije, zasnovanu na Nesterovljevom ubrzanom gradijentnom. Na početku rada ćemo se osvrnuti na teoretsku pozadinu navedenog algoritma, područija na kojima je najprimjenjeniji. Sljedeće čime ćemo se baviti je implementacijom navedenog algoritma u Julia programskom jeziku, ćiju ćemo korektnost testirati ručno na nekim proizvoljnim funkcijama, kao i na Rosenbrockovoj funkciji. U zaključku ćemo se osvrnuti na to koliko je naša implementacija algoritma dobra I može li se iskoristiti za svrhe u kojima se ovaj algoritam najviše koristi.
+Ubrzanje konvergencije u optimizaciji funkcija predstavlja jedno od ključnih problema savremene primjenjene matematike i kompjuterskih nauka.
+Ovaj rad ima za cilj prikazati Nesterovljevu ubrzanu gradijentnu metodom za minimizaciju funkcija, njenu implementaciju, kao i neke od savremenih praktičnih primjena.
 
-\iffalse
-    Ovo je \LaTeX\ predložak za izradu završnog rada prvog ciklusa studija, izrađen za potrebe studenata Elektrotehničkog fakulteta u Sarajevu. U radu se isprepliću dvije odvojene cjeline - sadržaj i forma. Sadržaj rada je baziran na idejama iz važećeg Pravilnika o strukturi i sadržaju doktorske disertacije i magistarskog rada na Elektrotehničkom fakultetu u Sarajevu (br. 04-1-673/11, dana 17.01.2011. godine), dok je forma rada definirana strukturom i načinom korištenja .tex fajlova.
-    U fajlu Zavrsni\_rad\_BSc\_Ime\_Prezime.tex oblikovane su osnovne stranice, a naredbom \textit{include} umeću se dodatne stranice i dodaju poglavlja.
+\noindent Prvenstveno se izlaže matematička podloga potrebna za razumijevanje metode, kao i samog rada, uključujući vizualizaciju i diskusiju o teoretskoj stopi konvergencije $O(1/k^2)$.
 
-    Osim \textit{Zavrsni\_rad\_BSc\_Ime\_Prezime.tex} fajla, koristi se još i: \textit{abstract.tex} (izdvojen fajl za sažetak na bosanskom i engleskom jeziku), \textit{postavka.tex} (izdvojen fajl za postavku rada), \textit{izjava.tex} (izdvojen fajl za izjavu o autentičnosti rada), \textit{poglavlje\_1.tex} (primjer jednog poglavlja),\textit{ prilog\_1.tex} (primjer jednog priloga) i \textit{literatura.bib} (bibliografski podaci).
+\noindent Zatim se, kao primjer, metoda implementira u programskom jeziku \textit{Julia}, gdje se prilaže i diskutuje o drugim matematički ekvivaletnim formulacijama, poput
+onih koji su predložili I. Sutskever i Y. Bengio, koje predstavljaju jednu važnu prekretnicu u razvoju modernog dubokog učenja i neuronskih mreža.
 
-    U sažetku je potrebno dati koncizan opis riješenih problema, metoda korištenih za njegovo (njihovo) rješavanje, dobivenih rezultata i zaključke. U sažetku se ne navode reference. Potrebno je voditi računa da se u sažetku ne daje uvod u rad, niti pregled poglavlja rada, već daje opis namjene rada do najviše 500 riječi.
-\fi
+\noindent Ekvivalentnost formulacija i valjanost njihovih implementacija su sukladno testirane i vizualizirane u sklopu rada, na odabranim primjerima, uključujući \textit{Rosenbrockovu funkciju}, standardni \textit{benchmarku} u teorije optimizacije.
+Na kraju se razmatraju ključne praktične primjene metode, pretežno u oblastima dubokog učenja, obrade signala i podataka, te rezimiraju njene glavne prednosti i ograničenja.
+
+
+
+
 \vspace{1cm}
 \textbf{Ključne riječi}: Nesterovljeva metoda, ubrzani gradijentni spust, numerička optimizacija, konveksna optimizacija, duboko učenje, FISTA, momentum, metode prvog reda, Julia
 
 
 \section*{Abstract}
 
-In this paper, we are going to be discussing a method for finding the minimum of function called Nesterov Accelerated Gradient. Firstly, we will delve into the theory behind the given algorithm and in which fields is it the most used. Secondly, we will implement the algorithm in the Julia programming language, whose correctness we will test by hand on some arbitrary functions, as well as with Rosenbrock’s function. In conclusion, we will look back at how our implementation holds up in use cases this algorithm is used the most.
+Accelerating the convergence rate of optimizations algorithms represents a key issue in modern applied mathematics and computer science.
+This paper aims to showcase the Nesterov accelerated gradient minimazation method (or NAG for short), its implementation, as well as some of its modern practical applications.
 
-\iffalse
-    This is a \LaTeX\ template for writing a bachelor's thesis, created for students of the Faculty of Electrical Engineering in Sarajevo. The work intertwines two separate parts - content and form. The content of the work is based on ideas from the current Regulations on the structure and content of doctoral dissertations and master's theses at the Faculty of Electrical Engineering in Sarajevo (no. 04-1-673/11, dated 17.01.2011), while the form of the work is defined by the structure and method of using .tex files.
-    In the file Zavrsni\_rad\_BSc\_Ime\_Prezime.tex, the basic pages are formatted, and additional pages and chapters are inserted using the \textit{include} command.
 
-    In addition to the \textit{Zavrsni\_rad\_BSc\_Ime\_Prezime.tex} file, the following are also used: \textit{abstract.tex} (separate file for summary in Bosnian and English), \textit{postavka.tex} (separate file for assignment), \textit{izjava.tex} (separate file for authenticity statement), \textit{poglavlje\_1.tex} (example of one chapter), \textit{prilog\_1.tex} (example of one appendix) and \textit{literatura.bib} (bibliographic data).
+\noindent First, the paper delves into the mathematical basis necessary for understanding the method, including a visual analysis and discussion of its theoretical convergence rate of $O(1/k^2)$.
 
-    The abstract should provide a concise description of the solved problems, methods used to solve them, obtained results and conclusions. References are not cited in the abstract. Care should be taken that the abstract does not provide an introduction to the work, nor an overview of the chapters of the work, but rather gives a description of the purpose of the work up to a maximum of 500 words.
-\fi
+\noindent Next, as an example, the method is implemented in the form of code, written in the \textit{Julia} programming language, along with other, mathematically equvivalent forms,
+such as those proposed by Sutskever and Bengio, which represent an important milestone in the development of modern deep learning and neural networks.
+
+\noindent The validity and equivavalence of the presented formulations are tested and visualized using a few selected examples, including \textit{Rosenbrock's function}, a standard benchmark in optimization theory.
+Finally, the paper discusses some of the method's key present-day practical applications, primarily in deep learning, signal processing, and data analysis, and summarizes its main strengths and limitations.
+
 \vspace{1cm}
-\textbf{Keywords}: Nesterov accelerated gradient, numerical optimization, convex optimization, deep learning, FISTA, momentum, first-order methods, Julia
+\textbf{Keywords}: Nesterov Accelerated Gradient method, numerical optimization, convex optimization, deep learning, FISTA, momentum, first-order methods, Julia
