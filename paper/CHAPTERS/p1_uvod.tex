@@ -25,47 +25,41 @@
 
 
 
-Problem minimizacije funkcija predstavlja jedan od najvažnijih problema primijenjene matematike. U najopštijem obliku, cilj je odrediti tačku
-\(\mathbf{x}  \in \mathbb{R} ^n\) u kojoj funkcija \(f(\mathbf{x})\) dostiže minimalnu vrijednost. Ovakvi problemi javljaju se u brojnim oblastima primijenjene matematike, fizike, ekonomije i savremenog mašinskog učenja.
+Problem minimizacije funkcija predstavlja jedan od najvažnijih problema primijenjene matematike. U općem obliku, cilj je odrediti tačku
+\(\mathbf{x}  \in \mathbb{R} ^n\) u kojoj funkcija \(f(\mathbf{x})\) dostiže minimalnu vrijednost.
+Ovakvi problemi javljaju se u brojnim oblastima primijenjene matematike, fizike, ekonomije i savremenog mašinskog učenja, te čak postoje čitave naučne discipline koje se pretežno bave ovim problemom, poput \textbf{teorije optimizacije}.
 
+Jedan od najjednostavniji i najintuitivniji pristup minimizaciji diferencijabilnih funkcija predstavljaju \textbf{metode gradijentnog spusta}.
+Polazeći od činjenice da gradijent funkcije (vektor parcijalnih izvoda funkcije) određuje pravac njenog najbržeg rasta, iterativno kretanje u suprotnom smjeru omogućava postupno približavanje minimumu.
+Metode koje koriste samo informacije o gradijentu funkcije, nazivaju se \textbf{metode prvog reda}, dok metode koje koriste informacije i o Hessianu (drugom izvodu), se nazivaju \textbf{metode drugog reda}.
 
-Jedna od osnovnih metoda za rješavanje problema minimizacije diferencijabilnih funkcija jeste gradijentni metod. Gradijent funkcije predstavlja vektor parcijalnih izvoda i pokazuje pravac najvećeg rasta funkcije, pa se minimizacija postiže kretanjem u suprotnom smjeru gradijenta. Iako je metoda jednostavna i široko primjenjiva, njena konvergencija može biti spora, naročito kod loše uslovljenih problema.
+Uprkos svojoj jednostavnosti i širokoj primjenjivosti, klasična metoda gradijentnog spusta često pati od spore konvergencije, naročito u slučajevima loše uslovljenih problema ili funkcija sa izraženom konveksnošću.
+Radi poboljšanja performansi razvijene su metode koje koriste dodatne informacije iz prethodnih iteracija. Jedan od prvih pristupa je metoda gradijentnog spusta sa momentuma (poznata kao i \textit{"heavy ball"} metoda, više o tom kasnije), koji uvodi “inerciju” u proces optimizacije i na taj način ublažava oscilacije i ubrzava kretanje kroz ravnije dijelove funkcije.
 
-Radi poboljšanja performansi razvijene su metode koje koriste dodatne informacije iz prethodnih iteracija. Jedan od prvih pristupa je metod momentuma, koji uvodi “inerciju” u proces optimizacije i na taj način ublažava oscilacije i ubrzava kretanje kroz ravnije dijelove funkcije.
+Godine 1983. ruski matematičar Yurii Nesterov predstavlja ubrzanu metodu gradijetnog spusta prvog reda sa stopom konvergencije reda $O(1/k^2)$ za konveksne funkcije.
+Iako je u početku bila pretežno svedena samo na teoreteski značaj, metoda je nekoliko decenija kasnije stekla široku praktičnu primjenu i danas je prepoznata kao jedan od najznačajnijih doprinosa u razvoju metoda prvog reda.
+Ključna ideja metode je u tome da se gradijent računa u \textbf{unaprijed predviđenoj tački} (poznatijom kao \textit{look-ahead} tački), što rezultira stabilnijim iterativnim postupkom i dokazivo boljom stopom konvergencije.
 
-Nesterov ubrzani gradijent metod predstavlja unapređenje klasičnog momentum pristupa. Za razliku od standardnog momentuma, kod Nesterovog metoda gradijent se računa u unaprijed predviđenoj tački, čime se dobija efikasniji i stabilniji postupak. Ova modifikacija dovodi do značajnog teorijskog poboljšanja brzine konvergencije.
+U usporedbi sa ostalim metodama prvog reda, ovo predstavlja drastično ubrzanje sa stope konvergencije reda $O(1/k)$.
 
-Cilj ovog rada je da se prikaže teorijska osnova Nesterovog ubrzanog gradijentnog metoda, objasne njegove interpretacije, analiziraju osobine konvergencije, te implementira algoritam i ispita njegovo ponašanje na Rosenbrockovoj funkciji.
-
-
-%Postupci minimizacije se mogu gledati kao jedno stablo. Na prvom stepenu možemo izabrati tip minimizacije i izabraćemo gradijentski. od svih mogućih gradijentskih, izabraćemo Nesterovljev ubrzani gradijentni metod.
-
-%In a groundbreaking paper in 1983, Nesterov, Y. [Nes83] showed that a simple variant of gradient de- scent—called accelerated gradient descent and applicable to any 𝐿-smooth convex function—produces iterates with optimality gap 𝑓(𝑥𝑡) − 𝑓⋆ of order 1/𝑡2, as opposed to the 1/𝑡 rate seen in the previous lecture. The intuition behind accelerated gradient descent is notoriously hard to grasp. The original proof, rife with algebraic manipulations, is notoriously elusive and has led several authors to investi- gate what principles make acceleration possible at a deep level, hoping to generalize the fundamental principles beyond just gradient descent. These efforts include at least the following directions
-
-
-
-
-% U ovoj sekciji autor je dužan da obrazloži koja tema ili problem će biti analizirani ili istraživani, te zbog čega je upravo ova tema pogodna i bitna za istraživanje. Pohvalno je napraviti pregled literature sa odgovarajućim referenciranjem na istu.
+Cilj ovog rada jeste sistematski prikazati teoretsku osnovu Nesterovljeve metode, analizirati njena konvergencijska svojstva i srodne formulacije, te implementirati algoritam i eksperimentalno ispitati njegovo ponašanje na odabranim primjerima, uključujući Rosenbrockovu funkciju kao standardni testni problem u numeričkoj optimizaciji.
 
 \section{Struktura rada}
-%U ovoj sekciji je najbolje dati po jedan paragraf o svakom poglavlju iz rada. Potencirajte koji su glavni doprinosi svakog poglavlja, te kako su poglavlja medjusobno povezana.
 
 
-Rad je organizovan u 4 poglavlja. U prvom poglavlju se opisuje struktura rada i teoretska osnova potrebna za razumjevanje Nesterovog ubrzanog gradijenta, kao i zašto i kada bi se trebao koristiti.
+Rad je organiziran u 4 poglavlja. U prvom poglavlju se opisuje struktura rada i teoretska osnova potrebna za razumjevanje Nesterovog ubrzanog gradijenta, kao i zašto i kada bi se trebao koristiti.
+U drugom poglavlju će biti prikazane tri tipa implementacija Nesterovog ubrzanog gradijenta, u formi standardne varijante, Sutskeverova modifikacije i Bengiove modifikacije metode. Zatim će biti prikazani primjeri rada implementiranih funkcija i usporediće se njihovi rezultati.
 
-U drugom poglavlju će biti prikazane tri tipa implementacija Nesterovog ubrzanog gradijenta, to jest standardna varijanta, Sutskeverova modifikacija i Bengiova formulacija metode. Zatim će biti prikazan jedan praktičan primjer rada implementiranih funkcija i usporediće se njihovi rezultati.
-
-Treće poglavlje će govoriti o primjenama algoritma u praksi, kao što su u dubokom učenju, modernim softverskim okvirima, optimizatorima te obradi signala i kompresovanog opažanja.
-
-
-U četvrtom smo oformili zaključak.
+Treće poglavlje će govoriti o primjenama algoritma u praksi, kao što su u dubokom učenju, modernim softverskim okvirima, optimizatorima te obradi signala i kompresiranog opažanja.
+U četvrtom smo oformili zaključak i rezimirali prednosti i ograničenja metode.
 
 
 \section{Teoretske osnove}
 
-\subsection{Metod momentuma}
-
-Jedno od prvih poboljšanja klasičnog gradijentnog metoda predstavlja metod momentuma, koji je uveo Boris Polyak. Osnovna ideja ovog pristupa jeste da se pri ažuriranju iteracija ne koristi samo trenutna vrijednost gradijenta, već i informacija o prethodnom kretanju algoritma.
+\subsection{Metode gradijentnog spusta za minimizaciju funkcije}
+\subsection{Metode gradijentnog spusta sa momentumom}
+Jedno od prvih poboljšanja klasičnog gradijentnog metoda predstavlja metod momentuma, koji je uveo Boris Polyak.
+Osnovna ideja ovog pristupa jeste da se pri ažuriranju iteracija ne koristi samo trenutna vrijednost gradijenta, već i informacija o prethodnom kretanju algoritma.
 
 \begin{equation}
     v_{t+1} = \mu v_t - \varepsilon \nabla  f(\theta _t)
@@ -77,7 +71,8 @@ Jedno od prvih poboljšanja klasičnog gradijentnog metoda predstavlja metod mom
 
 Gdje \(\varepsilon > 0 \) predstavlja parametar koraka, \(\mu \epsilon [0,1] \) parametar momentuma, a \( \nabla  f(\theta _t) \) gradijent.\cite{sutskever2013}
 
-\subsection{Nesterovljev ubrzani gradijentni metod}
+\subsection{Nesterovljev ubrzani gradijetni metod (NAG)}
+
 
 Metod Nesterovog ubrzaniog gradijenta je metod koji izgleda kao metod momentuma, ali nije u potpunosti isti.
 
@@ -91,7 +86,8 @@ Metod Nesterovog ubrzaniog gradijenta je metod koji izgleda kao metod momentuma,
 
 Razlika je u argumentu gradijenta \(+\mu v_t\), omogućuje metodu da brže popravi putanju kretanja od metod momentuma. \cite{sutskever2013}
 
-% \subsection{Formalna analiza konvergencije}
+
+\subsection{Formalna analiza konvergencije}
 
 
 
