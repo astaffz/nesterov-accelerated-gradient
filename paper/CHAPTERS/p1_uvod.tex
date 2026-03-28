@@ -1,13 +1,5 @@
 \chapter{Uvod}
 
-%U skladu sa dobrom istraživačkom praksom, uvodno poglavlje rada prvog ciklusa studija bi trebao sadržavati bar sljedeće elemente:
-%\begin{itemize}
-%\item {obrazloženje teme,}
-%\item {opis strukture rada.}
-%\end{itemize}
-
-%U narednom tekstu će detaljnije biti obrazložena svaka od tačaka.
-
 \section{Obrazloženje teme}
 
 %Šta je minimizacija?
@@ -57,9 +49,44 @@ U četvrtom smo oformili zaključak i rezimirali prednosti i ograničenja metode
 \section{Teoretske osnove}
 
 \subsection{Metode gradijentnog spusta za minimizaciju funkcije}
+U teoriji optimizacije, jedan od poznatijih pravaca se zasniva na upotrebi informacija koje nosi \textbf{gradijent funkcije}.
+Neka je funkcija više promjenjivih ${f(x_1,x_2,\dots,x_n)}$ definisana u nekoj okolini tačke
+$x = \left(x_1,x_2,\ldots,x_n\right)$ i neka postoje parcijalni izvodi po svakoj promjenjivoj funkcije u tački $x$.
+
+Vektor parcijalnih izvoda
+\begin{equation}
+    \nabla f\left(x\right) = \left(\frac{\partial f}{\partial x_1}\left(x\right), \frac{\partial f}{\partial x_2}\left(x\right), \ldots, \frac{\partial f}{\partial x_n}\left(x\right)\right)
+\end{equation}
+nazivamo \textbf{gradijent funkcije} $\nabla f$ u tački $x$. \cite{mujic2025}
+
+Ideja iza metoda gradijetnog spusta se zasniva na ključnoj osobini da gradijent $\nabla f\left(x\right)$ pokazuje u smjeru u kojem funkcija najbrže raste iz tačke $x$,
+te tako $-\nabla f\left(x\right)$ pokazuje \textbf{u kojem smjeru funkcija najbrže opada.}
+
+
+\textbf{Metoda najstrmijeg spusta} (engl. \textit{steepest descent method}) je jedan jednostavan ovakav pristup koji ovdje koristimo kao primjer primjene gradijenta u minimizaciji, čije ograničenja ćemo obrazložiti u nastavku. \cite{juric2018}
+
+
+Postupak je sljedeći: Krene se iz početne tačke $x_0$. Odredi se smjer kretanja kao vektor $p = -\nabla f(x)$. Vrši se minimizacija funkcije duž tog pravca, tj. traži se minimum funkcije jedne promjenljive $\phi(h) = f(x + hp)$, dok se ne dostigne najniža tačka u tom smjeru.
+U novodobijenoj tački ponovo se računa gradijent i postupak se ponavlja sve dok se ne zadovolji kriterij zaustavljanja, obično kada $\|\nabla f(x)\| < \delta$ za neki unaprijed zadani prag $\delta > 0$.
+
+Iako intuitivno jednostavna, metoda najstrmijeg spusta pati od nekoliko praktičnih nedostataka.
+Ključni problem, na koji je potrebno obratiti pažnju za potrebe ovog rada jeste spora konvergencija uzrokovana \textbf{cik-cak kretanjem} unutar \textit{uskih dolina funkcija}.
+
+Termin \textbf{uska dolina} odnosi se na područje domene funkcije u kojem su nivo linije oblika izduženih elipsa, tj. funkcija opada znatno brže u jednom smjeru nego u drugom.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{DIJAGRAMI/steep_valley_contour.png}
+    \caption{Graf funkcije sa 'uskim dolinama': ($f(x,y) = x^2 + 10y^2$)}
+    \label{fig:steep_val}
+\end{figure}
+
+Upravo ova ograničenja motivišu razvoj naprednijih metoda koje na bolji način iskorištavaju informacije o dosadašnjem toku optimizacije.
+
+
 \subsection{Metode gradijentnog spusta sa momentumom}
 Jedno od prvih poboljšanja klasičnog gradijentnog metoda predstavlja metod momentuma, koji je uveo Boris Polyak.
 Osnovna ideja ovog pristupa jeste da se pri ažuriranju iteracija ne koristi samo trenutna vrijednost gradijenta, već i informacija o prethodnom kretanju algoritma.
+
 
 \begin{equation}
     v_{t+1} = \mu v_t - \varepsilon \nabla  f(\theta _t)
@@ -73,8 +100,14 @@ Gdje \(\varepsilon > 0 \) predstavlja parametar koraka, \(\mu \epsilon [0,1] \) 
 
 \subsection{Nesterovljev ubrzani gradijetni metod (NAG)}
 
+U metodu momentuma, gradijent se uvijek računa u \textit{trenutnoj} tački
+$\theta_t$. Nakon što se gradijent izračuna, parametri se pomiču kombinacijom
+akumuliranog momentuma $\mu v_t$ i novog gradijentnog koraka.
+Problem sa ovim pristupom je što algoritam ``ne zna'' kuda će krenuti u
+sljedećem koraku dok ne izračuna gradijent. Do tada se već ``zaletio'' u
+pravcu starog momenta, može nadmašiti traženu tačku i početi se kretati u suprotnom smjeru, što rezultira cik-cak kretanjem.
 
-Metod Nesterovog ubrzaniog gradijenta je metod koji izgleda kao metod momentuma, ali nije u potpunosti isti.
+Metod Nesterovog ubrzaniog gradijenta (NAG) je metod koji izgleda kao metod momentuma, ali nije u potpunosti isti.
 
 \begin{equation}
     v_{t+1} = \mu v_t - \varepsilon \nabla  f(\theta _t +\mu v_t)
@@ -84,11 +117,19 @@ Metod Nesterovog ubrzaniog gradijenta je metod koji izgleda kao metod momentuma,
     \theta _{t+1} = \theta _t + v_{t+1}
 \end{equation}
 
-Razlika je u argumentu gradijenta \(+\mu v_t\), omogućuje metodu da brže popravi putanju kretanja od metod momentuma. \cite{sutskever2013}
+Razlika je da se gradijent ne računa u trenutnoj tački $\theta_t$, već u \textbf{unaprijed predviđenoj
+    tački} $\theta_t + \mu v_t$, koja se često naziva \textit{look-ahead} tačkom.
 
+Ova modifikacija omogućava algoritmu da ``vidi'' gdje će se nalaziti u sljedećem koraku i da se prilagodi prije nego što se tamo nađe,
+što, najznačanije, riješava problem cik-cak kretanja i omogućava stabilnije iteracije, naročito u slučajevima loše uslovljenih problema.
 
-\subsection{Formalna analiza konvergencije}
+Za konveksne funkcije, NAG postiže stopu konvergencije $O(1/k^2)$, za razliku od $O(1/k)$ kod gradijentnog spusta i metoda momentuma.
+U praksi znači da za dostizanje iste tačnosti NAG metodi je potrebno znatno manji broj iteracija. \cite{nesterov1983}
 
+Nesterov je dokazao da je ova stopa \textbf{optimalna} za metode
+prvog reda na klasi glatkih konveksnih funkcija, u smislu da nijedan algoritam
+koji koristi isključivo informacije o gradijentu ne može garantirati bolju
+stopu konvergencije u najgorem slučaju.
 
 
 
