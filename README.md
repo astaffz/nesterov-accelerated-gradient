@@ -13,7 +13,16 @@ _(bs. Nesterovljev ubrzani gradijentni metod za minimizaciju)_
 
 ## Abstract
 
-TO-DO: Add the final paper abstract
+Accelerating the convergence rate of optimizations algorithms represents a key issue in modern applied mathematics and computer science.
+This paper aims to showcase the Nesterov accelerated gradient minimazation method (or NAG for short), its implementation, as well as some of its modern practical applications.
+
+First, the paper delves into the mathematical basis necessary for understanding the method, including a visual analysis and discussion of its theoretical convergence rate of $O(1/k^2)$.
+
+Next, as an example, the method is implemented in the form of code, written in the **Julia programming language**, along with other, mathematically equvivalent forms,
+such as those proposed by Sutskever and Bengio, which represent an important milestone in the development of modern deep learning and neural networks.
+
+The validity and equivavalence of the presented formulations are tested and visualized using a few selected examples, including **Rosenbrock's function**, a standard benchmark in optimization theory.
+Finally, the paper discusses some of the method's key present-day practical applications, primarily in deep learning, signal processing, and data analysis, and summarizes its main strengths and limitations.
 
 ## License
 
