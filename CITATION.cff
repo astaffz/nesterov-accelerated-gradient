@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you wish to use this paper, please cite it as below."
+authors:
+  - family-names: "Mustafić"
+    given-names: "Aid"
+  - family-names: "Ljutika"
+    given-names: "Zlatan"
+title: "Nesterovljev ubrzani gradijentni metod za minimizaciju"
+version: 1.0.0
+date-released: "2026-03-28"
+url: "https://github.com/astaffz/nesterov-accelerated-gradient"
